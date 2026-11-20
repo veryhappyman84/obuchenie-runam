@@ -247,6 +247,43 @@
       .empty-note{color:var(--muted); font-weight:600; text-align:center; padding:28px 10px}
       .g,.glyphs,.q-name-big,.face.back .g{font-family:"Noto Sans Runic","Segoe UI Symbol","Noto Sans Symbols 2",sans-serif}
       footer{margin-top:44px; color:var(--muted); font-size:14px; border-top:1px solid var(--line); padding-top:16px}
+      .spread-type{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+      .spread-q{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);color:inherit;font:inherit;margin:6px 0 12px}
+      .slots3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+      .slots5{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:560px;margin:0 auto}
+      .slot{border:1px dashed var(--line);border-radius:12px;padding:10px;min-height:150px;text-align:center;background:var(--surface2)}
+      .slot.filled{border-style:solid;border-color:var(--gold)}
+      .slot .pos{font-size:12px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.04em}
+      .slot .pos-hint{font-size:12px;color:var(--muted);margin:2px 0 8px}
+      .slot img{width:64px;height:96px;object-fit:cover;border-radius:8px}
+      .slot .sname{font-weight:800;margin-top:6px}
+      .slot .sori{font-size:13px;color:var(--muted)}
+      .slot .slot-actions{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+      .mini-btn{font:inherit;font-size:13px;padding:5px 9px;border-radius:8px;border:1px solid var(--line);background:transparent;color:inherit;cursor:pointer}
+      .picker{border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;background:var(--surface2)}
+      .picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:10px}
+      .picker-item{border:1px solid var(--line);border-radius:10px;padding:6px;cursor:pointer;background:transparent;color:inherit;font:inherit;text-align:center}
+      .picker-item:disabled{opacity:.35;cursor:default}
+      .picker-item img{width:100%;height:104px;object-fit:cover;border-radius:6px}
+      .picker-item .rn{font-size:13px;font-weight:700;margin-top:4px}
+      .reading{margin-top:16px}
+      .reading h3{margin:18px 0 6px}
+      .read-block{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:var(--surface2)}
+      .read-block .why{border-top:1px dashed var(--line);margin-top:10px;padding-top:8px;font-size:14px}
+      .read-block .why b{color:var(--gold)}
+      .synth{border:1px solid var(--gold);border-radius:12px;padding:14px;background:var(--surface2)}
+      .sigil{width:180px;height:180px;margin:10px auto;border:1px solid var(--gold);border-radius:50%;position:relative;background:radial-gradient(circle,rgba(212,175,55,.12),transparent 70%)}
+      .sigil span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:var(--gold);line-height:1}
+      .stav-runes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+      .stav-rune{width:110px;text-align:center}
+      .stav-rune img{width:64px;height:96px;object-fit:cover;border-radius:8px}
+      .stav-rune .rn{font-weight:800;font-size:13px;margin-top:4px}
+      .stav-rune .rr{font-size:12px;color:var(--muted)}
+      @media (max-width:560px){
+        .slots3{grid-template-columns:1fr}
+        .slots5{grid-template-columns:1fr}
+        .slots5 .slot{grid-column:auto !important;grid-row:auto !important}
+      }
       @media (prefers-reduced-motion: reduce){
         .flash{transition:none} .card{transition:none} html{scroll-behavior:auto}
         .progress i,.q-progress i{transition:none}
@@ -257,7 +294,7 @@
     <div class="wrap">
       <header class="hero">
         <h1>Старший Футарк: <span class="gold">24 руны и руна Одина</span></h1>
-        <p class="lede">Весь ряд делится на три этта — три восьмёрки рун. Изучайте камни в каталоге, закрепляйте карточками и проверяйте себя в квизе.</p>
+        <p class="lede">Весь ряд делится на три этта — три восьмёрки рун. Изучайте камни в каталоге, закрепляйте карточками, проверяйте себя в квизе, делайте расклады и собирайте рунические ставы.</p>
         <div class="hero-stats">
           <div class="stat"><b id="statLearned">0 из 25</b><span>рун отмечено изученными</span></div>
           <div class="stat"><b id="statQuiz">—</b><span>лучший результат квиза</span></div>
@@ -270,6 +307,8 @@
         <button class="tab" role="tab" id="tab-catalog" aria-selected="true" data-view="catalog">Каталог рун</button>
         <button class="tab" role="tab" id="tab-flash" aria-selected="false" data-view="flash">Карточки</button>
         <button class="tab" role="tab" id="tab-quiz" aria-selected="false" data-view="quiz">Квиз</button>
+        <button class="tab" role="tab" id="tab-spread" aria-selected="false" data-view="spread">Расклады</button>
+        <button class="tab" role="tab" id="tab-stav" aria-selected="false" data-view="stav">Рунические ставы</button>
       </nav>
 
       <!-- ============ CATALOG ============ -->
@@ -326,6 +365,16 @@
       <!-- ============ QUIZ ============ -->
       <section class="view" id="view-quiz" role="tabpanel" aria-labelledby="tab-quiz">
         <div class="quiz-box" id="quizRoot"></div>
+      </section>
+
+      <!-- ============ SPREADS ============ -->
+      <section class="view" id="view-spread" role="tabpanel" aria-labelledby="tab-spread">
+        <div id="spreadRoot"></div>
+      </section>
+
+      <!-- ============ STAVS ============ -->
+      <section class="view" id="view-stav" role="tabpanel" aria-labelledby="tab-stav">
+        <div id="stavRoot"></div>
       </section>
 
       <footer>
@@ -781,10 +830,307 @@
         });
       }
 
+      /* ---------- Расклады ---------- */
+      var SPREAD_TYPES = {
+        "3": { name:"Три руны", positions:[
+          { short:"Прошлое", label:"1 · Прошлое", hint:"Что привело к ситуации, её корни", why:"эта сила объясняет корни ситуации" },
+          { short:"Настоящее", label:"2 · Настоящее", hint:"Что происходит сейчас", why:"эта сила действует прямо сейчас" },
+          { short:"Будущее", label:"3 · Будущее", hint:"Куда всё движется, вероятный исход", why:"эта сила определяет, куда всё движется" }
+        ]},
+        "5": { name:"Пять рун — крест", positions:[
+          { short:"Совет", label:"4 · Совет", hint:"Помощь и верный шаг", why:"эта сила подсказывает верный шаг", cell:"grid-column:2;grid-row:1" },
+          { short:"Прошлое", label:"2 · Прошлое", hint:"Основа — что было", why:"эта сила объясняет корни ситуации", cell:"grid-column:1;grid-row:2" },
+          { short:"Суть вопроса", label:"1 · Суть вопроса", hint:"Сердце вопроса", why:"эта сила — суть вопроса", cell:"grid-column:2;grid-row:2" },
+          { short:"Будущее", label:"3 · Будущее", hint:"Развитие — что впереди", why:"эта сила определяет, куда всё движется", cell:"grid-column:3;grid-row:2" },
+          { short:"Итог", label:"5 · Итог", hint:"Чем всё завершится", why:"эта сила решает итог", cell:"grid-column:2;grid-row:3" }
+        ]}
+      };
+      var CORE = {
+        1:"поток достатка, который живёт только в движении",
+        2:"неукротимая жизненная сила, которая формирует жизнь делом",
+        3:"сила на пороге: защита, которая может и ранить",
+        4:"слово и знак, приходящие вовремя",
+        5:"дорога и её ритм",
+        6:"свет знания, освещающий следующий шаг",
+        7:"честный обмен, где выигрывают оба",
+        8:"радость и чувство своих людей",
+        9:"стихия, которая сметает отжившее",
+        10:"нужда, которая закаляет и учит отличать настоящее от лишнего",
+        11:"пауза и прозрачность льда",
+        12:"справедливый урожай, приходящий в свой срок",
+        13:"внутренний стержень: гнуться, не ломаясь",
+        14:"тайна и жребий — то, что пока скрыто",
+        15:"защита чутьём и связью с высшим",
+        16:"солнечная ясность и победа",
+        17:"честь и победа, за которую платят цену",
+        18:"рост день за днём, как у дерева",
+        19:"движение через доверие — вдвоём в одну сторону",
+        20:"человек среди людей: разум и взаимопомощь",
+        21:"вода — интуиция, которая огибает препятствия",
+        22:"семя, которому нужны тишина и время",
+        23:"рассвет после долгой ночи — прорыв",
+        24:"наследие и корни рода",
+        25:"судьба, о которой нельзя знать заранее"
+      };
+      var spread = { type:"3", question:"", slots:[], pickerSlot:-1 };
+      function spreadReset(){ spread.slots = SPREAD_TYPES[spread.type].positions.map(function(){ return { n:null, rev:false }; }); spread.pickerSlot = -1; }
+      function runeByN(n){ var f = RUNES.filter(function(r){ return r.n === n; }); return f.length ? f[0] : null; }
+      function firstSentence(t){ var i = t.indexOf(". "); return i === -1 ? t : t.slice(0, i + 1); }
+      function hasRev(r){ return !!r.rev; }
+      function slotOriLabel(r, rev){ if(rev) return "перевёрнутая"; return hasRev(r) ? "прямая" : "положение единственное"; }
+      function attr(s){ return esc(s).replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
+      function renderSpread(){
+        var root = byId("spreadRoot");
+        var t = SPREAD_TYPES[spread.type];
+        var typeBtns = Object.keys(SPREAD_TYPES).map(function(k){
+          return "<button class='chip' type='button' data-st='" + k + "' aria-pressed='" + (spread.type === k) + "'>" + SPREAD_TYPES[k].name + "</button>";
+        }).join("");
+        var slotsHtml = t.positions.map(function(p, i){
+          var s = spread.slots[i];
+          var cell = p.cell ? " style='" + p.cell + "'" : "";
+          var inner;
+          if(!s.n){
+            inner = "<div class='pos'>" + esc(p.label) + "</div><div class='pos-hint'>" + esc(p.hint) + "</div>" +
+              "<button class='mini-btn' type='button' data-pick='" + i + "'>Выбрать руну</button>";
+          } else {
+            var r = runeByN(s.n);
+            inner = "<div class='pos'>" + esc(p.label) + "</div>" +
+              "<img src='" + r.file + "' alt='Камень руны " + esc(r.name) + "' />" +
+              "<div class='sname'><span class='g'>" + r.glyph + "</span> " + esc(r.name) + "</div>" +
+              "<div class='sori'>" + slotOriLabel(r, s.rev) + "</div>" +
+              "<div class='slot-actions'>" +
+                (hasRev(r) ? "<button class='mini-btn' type='button' data-flip='" + i + "'>Перевернуть</button>" : "") +
+                "<button class='mini-btn' type='button' data-pick='" + i + "'>Сменить</button>" +
+                "<button class='mini-btn' type='button' data-drop='" + i + "'>Убрать</button>" +
+              "</div>";
+          }
+          return "<div class='slot" + (s.n ? " filled" : "") + "'" + cell + ">" + inner + "</div>";
+        }).join("");
+        var pickerHtml = "";
+        if(spread.pickerSlot >= 0){
+          var used = {};
+          spread.slots.forEach(function(s, idx){ if(s.n && idx !== spread.pickerSlot) used[s.n] = true; });
+          pickerHtml = "<div class='picker'><b>Выберите руну в позицию «" + esc(t.positions[spread.pickerSlot].label) + "»</b>" +
+            "<div class='picker-grid'>" + RUNES.map(function(r){
+              return "<button class='picker-item' type='button' data-rune='" + r.n + "'" + (used[r.n] ? " disabled" : "") + ">" +
+                "<img src='" + r.file + "' alt='' /><div class='rn'>" + esc(r.name) + "</div></button>";
+            }).join("") + "</div>" +
+            "<div style='margin-top:10px'><button class='mini-btn' type='button' data-pick-cancel='1'>Отмена</button></div></div>";
+        }
+        root.innerHTML =
+          "<p class='lede'>Сделайте расклад своими камнями и укажите, какие руны выпали. Приложение само соберёт совместную интерпретацию — общий смысл и объяснение каждой руны в её позиции.</p>" +
+          "<div class='spread-type'>" + typeBtns + "</div>" +
+          "<input class='spread-q' id='spreadQ' type='text' maxlength='140' placeholder='Ваш вопрос (необязательно)' value='" + attr(spread.question) + "' />" +
+          "<div class='" + (spread.type === "3" ? "slots3" : "slots5") + "'>" + slotsHtml + "</div>" +
+          pickerHtml +
+          "<div style='display:flex;gap:8px;flex-wrap:wrap;margin-top:14px'>" +
+            "<button class='btn gold' id='spreadGo' type='button'>Получить интерпретацию</button>" +
+            "<button class='btn' id='spreadClear' type='button'>Очистить расклад</button>" +
+          "</div>" +
+          "<div id='spreadReading' class='reading'></div>";
+        root.querySelectorAll("[data-st]").forEach(function(b){ b.addEventListener("click", function(){ spread.type = b.getAttribute("data-st"); spreadReset(); renderSpread(); }); });
+        byId("spreadQ").addEventListener("input", function(e){ spread.question = e.target.value; });
+        root.querySelectorAll("[data-pick]").forEach(function(b){ b.addEventListener("click", function(){ spread.pickerSlot = Number(b.getAttribute("data-pick")); renderSpread(); }); });
+        root.querySelectorAll("[data-flip]").forEach(function(b){ b.addEventListener("click", function(){ var i = Number(b.getAttribute("data-flip")); spread.slots[i].rev = !spread.slots[i].rev; renderSpread(); }); });
+        root.querySelectorAll("[data-drop]").forEach(function(b){ b.addEventListener("click", function(){ var i = Number(b.getAttribute("data-drop")); spread.slots[i] = { n:null, rev:false }; renderSpread(); }); });
+        root.querySelectorAll("[data-rune]").forEach(function(b){ b.addEventListener("click", function(){ spread.slots[spread.pickerSlot] = { n:Number(b.getAttribute("data-rune")), rev:false }; spread.pickerSlot = -1; renderSpread(); }); });
+        var cancel = root.querySelector("[data-pick-cancel]");
+        if(cancel) cancel.addEventListener("click", function(){ spread.pickerSlot = -1; renderSpread(); });
+        byId("spreadGo").addEventListener("click", buildReading);
+        byId("spreadClear").addEventListener("click", function(){ spreadReset(); spread.question = ""; renderSpread(); });
+      }
+      function buildReading(){
+        var box = byId("spreadReading");
+        var t = SPREAD_TYPES[spread.type];
+        var missing = spread.slots.some(function(s){ return !s.n; });
+        if(missing){ box.innerHTML = "<p class='empty-note'>Заполните все позиции расклада — выберите руну в каждую.</p>"; return; }
+        var revCount = 0; var kwCount = {};
+        var blocks = t.positions.map(function(p, i){
+          var s = spread.slots[i]; var r = runeByN(s.n);
+          var rev = s.rev && hasRev(r);
+          if(rev) revCount++;
+          r.kw.forEach(function(k){ kwCount[k] = (kwCount[k] || 0) + 1; });
+          var meaning = rev ? revText(r) : r.desc;
+          return "<div class='read-block'>" +
+            "<b>" + esc(p.label) + " — <span class='g'>" + r.glyph + "</span> " + esc(r.name) + " · " + slotOriLabel(r, rev) + "</b>" +
+            "<div style='margin:8px 0'><img src='" + r.file + "' alt='Камень руны " + esc(r.name) + "' style='width:56px;height:84px;object-fit:cover;border-radius:8px' /></div>" +
+            "<div>" + esc(meaning) + "</div>" +
+            "<div class='why'><b>Почему именно так:</b> «" + esc(r.name) + "» — это " + esc(r.literal) + "; её сила — " + esc(CORE[r.n]) + ", и в позиции «" + esc(p.short) + "» " + esc(p.why) + ".</div>" +
+            "</div>";
+        }).join("");
+        var themes = Object.keys(kwCount).sort(function(a, b){ return kwCount[b] - kwCount[a]; }).slice(0, 3);
+        var thread = t.positions.map(function(p, i){
+          var s = spread.slots[i]; var r = runeByN(s.n);
+          var rev = s.rev && hasRev(r);
+          return p.short + " (" + r.name + ") — " + firstSentence(rev ? revText(r) : r.desc);
+        }).join("; ") + ".";
+        var revLine = revCount > 0
+          ? "Перевёрнутых рун: " + revCount + " из " + t.positions.length + " — здесь что-то задержано, искажено или требует осторожности."
+          : "Все руны выпали прямо — поток идёт без искажений.";
+        var closeLine = spread.type === "3"
+          ? "Читайте расклад как одну историю: прошлое объясняет, настоящее показывает, будущее предупреждает."
+          : "Центр — суть вопроса, вокруг него прошлое и будущее, сверху совет, снизу итог: так руны складываются в один ответ.";
+        box.innerHTML =
+          "<h3>Совместная интерпретация</h3>" +
+          (spread.question ? "<p><b>Вопрос:</b> «" + esc(spread.question) + "»</p>" : "") +
+          "<div class='synth'><p><b>Общий смысл:</b> " + esc(thread) + "</p>" +
+          "<p><b>Главные темы расклада:</b> " + esc(themes.join(", ")) + ".</p>" +
+          "<p>" + esc(revLine) + "</p><p>" + esc(closeLine) + "</p></div>" +
+          blocks +
+          "<p class='empty-note'>Интерпретация собрана приложением из значений рун в их позициях — прямое и перевёрнутое положения учтены.</p>";
+        box.scrollIntoView({ behavior:"smooth", block:"start" });
+      }
+
+      /* ---------- Рунические ставы ---------- */
+      var STAV_SPHERES = [
+        { key:"love", name:"Любовь и отношения" },
+        { key:"money", name:"Бизнес и деньги" },
+        { key:"health", name:"Здоровье" },
+        { key:"protect", name:"Защита" },
+        { key:"career", name:"Карьера и успех" },
+        { key:"luck", name:"Удача и гармония" }
+      ];
+      var STAVS = [
+        { id:"love-attract", sphere:"love", name:"Привлечение любви",
+          kw:["привлечь","найти","встретить","познакомиться","любовь","любимого","любимую","половинка","отношения","парень","девушка","мужчина","женщина","одинок","одна"],
+          runes:[7,8,16],
+          roles:{ 7:"Гебо — открывает встречу: дар и обмен, союз, где выигрывают оба", 8:"Вуньо — радость и лёгкость: рядом с вами тепло", 16:"Совило — солнце: сила притяжения и ясность намерения" },
+          how:"Став работает как маяк. Гебо создаёт пространство встречи и честного обмена, Совило наполняет его светом и силой притяжения, а Вуньо делает так, чтобы рядом с вами было радостно. Став не привязывает конкретного человека — он притягивает того, с кем возможен союз на равных.",
+          use:"Нанесите став на бумагу или своё фото, проговорите вслух, кого и для чего вы зовёте. Активируйте дыханием. Носите с собой, пока не произойдёт встреча, затем отпустите с благодарностью." },
+        { id:"love-harmony", sphere:"love", name:"Гармония в отношениях",
+          kw:["вернуть","сохранить","гармония","помириться","ссора","ссоры","ругаемся","муж","жена","семья","понимание","вместе","отношения"],
+          runes:[7,4,8],
+          roles:{ 7:"Гебо — союз и дар: оба дают и оба получают", 4:"Ансуз — слово и понимание: честный разговор вместо догадок", 8:"Вуньо — тепло и радость быть вместе" },
+          how:"Став выравнивает обмен в паре. Гебо держит равновесие «даю — получаю», Ансуз открывает честный разговор, а Вуньо возвращает тепло, ради которого союз и создавался. Он не решает конфликт за вас — он убирает то, что мешает договориться.",
+          use:"Нанесите став на совместное фото или лист с именами, оговорите: «пусть между нами будет понимание и тепло». Активируйте дыханием. Держите, пока отношения не выровняются." },
+        { id:"money-flow", sphere:"money", name:"Денежный поток",
+          kw:["деньги","доход","зарплата","богатство","прибыль","бизнес","поток","финансы","заработать","долги","долг","денег"],
+          runes:[1,5,16,22],
+          roles:{ 1:"Феху — приток: само богатство и его движение", 5:"Райдо — каналы: пути, по которым деньги приходят", 16:"Совило — сила и победа: энергия доводить дела до конца", 22:"Ингуз — урожай: вложенное возвращается плодом" },
+          how:"Став открывает движение денег. Феху даёт сам поток, Райдо прокладывает каналы — клиентов, заказы, возможности, Совило добавляет силы доводить дела до конца, а Ингуз собирает урожай: вложенное возвращается с прибытком. Работает только вместе с действиями: став усиливает движение, а не заменяет его.",
+          use:"Нанесите на кошелёк, рабочее место или лист с суммой-целью. Оговорите источник дохода и сумму. Активируйте дыханием. Обновляйте, когда цель достигнута." },
+        { id:"money-deal", sphere:"money", name:"Успех в делах",
+          kw:["сделка","договор","переговоры","проект","дело","бизнес","успех","выиграть","тендер","клиент","продажа","подписать"],
+          runes:[17,16,1],
+          roles:{ 17:"Тейваз — воля и победа: цель, за которую стоят", 16:"Совило — ясность и сила: вас видят и слышат", 1:"Феху — материальный результат сделки" },
+          how:"Став собран для конкретной цели. Тейваз даёт стойкость и честную победу, Совило — ясность и уверенность, которые чувствует другая сторона, Феху переводит победу в деньги. Вместе они держат вас в позиции силы на переговорах.",
+          use:"Нанесите на лист с названием дела или носите с собой на встречу. Оговорите исход: что должно быть подписано и на каких условиях. После сделки отпустите став с благодарностью." },
+        { id:"health-restore", sphere:"health", name:"Восстановление сил",
+          kw:["здоровье","выздороветь","силы","болезнь","усталость","восстановить","энергия","иммунитет","сон","бодрость"],
+          runes:[2,16,22],
+          roles:{ 2:"Уруз — жизненная сила тела", 16:"Совило — свет и энергия", 22:"Ингуз — обновление: завершение болезни и новый запас сил" },
+          how:"Став работает с телом. Уруз возвращает физическую силу, Совило наполняет энергией и проясняет состояние, Ингуз закрывает этап болезни и переводит организм в обновление. Это поддержка, а не замена лечению: став помогает телу, а болезнь лечит врач.",
+          use:"Нанесите на бумагу и держите рядом во время отдыха или сна. Оговорите: «силы возвращаются, тело восстанавливается». Работает мягко — не ждите чуда за одну ночь." },
+        { id:"health-protect", sphere:"health", name:"Защита здоровья",
+          kw:["защитить","защита","не болеть","профилактика","сохранить здоровье","операция","врач","больница"],
+          runes:[15,2,18],
+          roles:{ 15:"Альгиз — защита: чутьё, которое предупреждает заранее", 2:"Уруз — сила и выносливость тела", 18:"Беркана — рост и бережное восстановление" },
+          how:"Став ставит охрану вокруг здоровья. Альгиз обостряет чутьё — вы вовремя замечаете, что не так, Уруз держит запас сил, а Беркана мягко восстанавливает то, что изнашивается. Хорош перед нагрузками, поездками и в сезон болезней.",
+          use:"Нанесите на себя — бумагу с именем — или носите при себе в сложный период. Оговорите, от чего защищаетесь. Снимайте, когда период прошёл." },
+        { id:"protect-home", sphere:"protect", name:"Защита дома и семьи",
+          kw:["защитить дом","защита дома","семья","квартира","дом","порча","сглаз","враги","недоброжелатели","безопасность"],
+          runes:[15,24,3],
+          roles:{ 15:"Альгиз — высшая защита и бдительность", 24:"Отала — дом, род и его границы", 3:"Турисаз — активный отпор тому, кто перешёл границу" },
+          how:"Став очерчивает границу. Отала — это сам дом и род, Альгиз — стража, которая замечает угрозу раньше вас, Турисаз — шип, который встречает того, кто пришёл с худа. Внутрь пропускается только своё и доброе.",
+          use:"Нанесите на входную дверь, порог или план дома. Оговорите: «мой дом под защитой, злое не входит». Обновляйте раз в месяц." },
+        { id:"protect-road", sphere:"protect", name:"Защита в пути",
+          kw:["дорога","поездка","путешествие","перелёт","машина","путь","в дорогу","командировка","безопасно доехать"],
+          runes:[15,5,17],
+          roles:{ 15:"Альгиз — охрана в пути", 5:"Райдо — сама дорога и её ритм", 17:"Тейваз — уверенность и благополучное прибытие" },
+          how:"Став собран для дороги. Райдо держит путь и его ритм, Альгиз охраняет от случайностей, Тейваз ведёт к цели без потерь. Работает и на дальнюю поездку, и на каждый день за рулём.",
+          use:"Нанесите на лист и возьмите с собой или положите в машину. Оговорите маршрут и благополучное возвращение. После поездки отпустите." },
+        { id:"career-growth", sphere:"career", name:"Рост в карьере",
+          kw:["карьера","повышение","должность","работа","начальник","признание","рост","зарплата","собеседование"],
+          runes:[17,4,16],
+          roles:{ 17:"Тейваз — цель и победа: шаг вверх", 4:"Ансуз — слово: вас слышат и ценят", 16:"Совило — успех, который видно" },
+          how:"Став делает вашу работу заметной. Тейваз даёт волю идти на повышение, Ансуз — умение говорить о своих результатах так, чтобы их услышали, Совило — свет успеха, который выделяет вас среди других. Руны открывают дорогу, но идти по ней — вам.",
+          use:"Нанесите на рабочее место или лист с целью — должность и срок. Оговорите конкретный шаг. Носите до результата." },
+        { id:"career-new", sphere:"career", name:"Новая работа",
+          kw:["новая работа","найти работу","уволиться","сменить работу","вакансия","резюме","оффер","предложение"],
+          runes:[5,1,23],
+          roles:{ 5:"Райдо — путь к новому месту", 1:"Феху — доход на новом месте", 23:"Дагаз — прорыв: рассвет после долгой ночи" },
+          how:"Став открывает переход. Райдо прокладывает дорогу к новому месту, Феху следит, чтобы оно кормило, Дагаз — это сам прорыв: момент, когда старое отпускает и начинается новый день. Хорош, когда решение уже принято, а шага ещё нет.",
+          use:"Нанесите на резюме или лист с описанием желаемой работы. Оговорите условия: чем заниматься, сколько получать. Действуйте: откликайтесь — став открывает двери, а не стучит в них за вас." },
+        { id:"luck-path", sphere:"luck", name:"Удача и открытый путь",
+          kw:["удача","везение","повезло","шанс","путь открыт","удачный","фортуна","лотерея","случай"],
+          runes:[16,23,8],
+          roles:{ 16:"Совило — свет победы", 23:"Дагаз — прорыв и ясность", 8:"Вуньо — радость и лёгкость" },
+          how:"Став убирает туман с дороги. Дагаз приносит ясность — вы видите, куда идти, Совило даёт силу и победу, Вуньо — лёгкость, с которой удача приходит к тем, кто её ждёт без напряжения. Это став-настрой: он не делает за вас, он делает путь видимым.",
+          use:"Нанесите на бумагу перед важным днём. Оговорите: «путь открыт, удача со мной». Носите в день события." },
+        { id:"luck-wish", sphere:"luck", name:"Исполнение желания",
+          kw:["желание","мечта","исполнить","загадать","хочу","цель","добиться","получить"],
+          runes:[22,8,14],
+          roles:{ 22:"Ингуз — семя желания и его созревание", 8:"Вуньо — радость исполнения", 14:"Перт — судьба: шанс, который нельзя просчитать" },
+          how:"Став работает с желанием как с семенем. Ингуз сажает его и даёт время созреть, Вуньо держит радость от будущего исполнения, Перт оставляет место судьбе — тому шансу, который нельзя запланировать. Желание должно быть вашим и честным — чужие желания став не растит.",
+          use:"Нанесите на лист, запишите желание одной фразой. Оговорите срок. Не проверяйте каждый день — семя не растёт, если его выкапывать." }
+      ];
+      var stav = { sphere:"love", request:"", picked:null };
+      function sigilHTML(runes){
+        var sizes = [118, 92, 70, 52];
+        return "<div class='sigil' aria-hidden='true'>" + runes.map(function(n, i){
+          return "<span style='font-size:" + sizes[i % sizes.length] + "px;opacity:" + (0.95 - i * 0.12).toFixed(2) + "'>" + runeByN(n).glyph + "</span>";
+        }).join("") + "</div>";
+      }
+      function renderStav(){
+        var root = byId("stavRoot");
+        var chips = STAV_SPHERES.map(function(s){
+          return "<button class='chip' type='button' data-sphere='" + s.key + "' aria-pressed='" + (stav.sphere === s.key) + "'>" + esc(s.name) + "</button>";
+        }).join("");
+        root.innerHTML =
+          "<p class='lede'>Выберите сферу и опишите запрос — приложение подберёт став и распишет, как он работает. Став — это связка рун, собранная под одну задачу.</p>" +
+          "<div class='spread-type'>" + chips + "</div>" +
+          "<input class='spread-q' id='stavQ' type='text' maxlength='140' placeholder='Ваш запрос, например: хочу привлечь любовь' value='" + attr(stav.request) + "' />" +
+          "<div style='display:flex;gap:8px;flex-wrap:wrap;margin:10px 0'>" +
+            "<button class='btn gold' id='stavGo' type='button'>Подобрать став</button>" +
+          "</div>" +
+          "<div id='stavResult'></div>";
+        root.querySelectorAll("[data-sphere]").forEach(function(b){ b.addEventListener("click", function(){ stav.sphere = b.getAttribute("data-sphere"); stav.picked = null; renderStav(); }); });
+        byId("stavQ").addEventListener("input", function(e){ stav.request = e.target.value; });
+        byId("stavGo").addEventListener("click", pickStav);
+        if(stav.picked) showStav(stav.picked);
+      }
+      function norm(s){ return s.toLowerCase().replace(/[^a-zа-яё0-9 ]/g, " "); }
+      function pickStav(){
+        var list = STAVS.filter(function(s){ return s.sphere === stav.sphere; });
+        var q = norm(stav.request);
+        var best = null, bestScore = 0;
+        list.forEach(function(s){
+          var score = 0;
+          s.kw.forEach(function(k){ if(q.indexOf(k) !== -1) score++; });
+          if(score > bestScore){ bestScore = score; best = s; }
+        });
+        if(!best) best = list[0];
+        stav.picked = best.id;
+        showStav(best.id);
+      }
+      function showStav(id){
+        var box = byId("stavResult"); if(!box) return;
+        var s = STAVS.filter(function(x){ return x.id === id; })[0];
+        var others = STAVS.filter(function(x){ return x.sphere === s.sphere && x.id !== id; });
+        var runesHtml = s.runes.map(function(n){
+          var r = runeByN(n);
+          return "<div class='stav-rune'><img src='" + r.file + "' alt='Камень руны " + esc(r.name) + "' /><div class='rn'><span class='g'>" + r.glyph + "</span> " + esc(r.name) + "</div><div class='rr'>" + esc(s.roles[n] || r.literal) + "</div></div>";
+        }).join("");
+        box.innerHTML =
+          "<div class='read-block'><h3 style='margin-top:0'>Став «" + esc(s.name) + "»</h3>" +
+          (stav.request ? "<p><b>Запрос:</b> «" + esc(stav.request) + "»</p>" : "") +
+          sigilHTML(s.runes) +
+          "<div class='stav-runes'>" + runesHtml + "</div>" +
+          "<p><b>Как работает став:</b> " + esc(s.how) + "</p>" +
+          "<p><b>Как применять:</b> " + esc(s.use) + "</p>" +
+          (others.length ? "<p style='margin-top:10px'><b>Другой став этой сферы:</b> " + others.map(function(o){ return "<button class='mini-btn' type='button' data-stav='" + o.id + "'>" + esc(o.name) + "</button>"; }).join(" ") + "</p>" : "") +
+          "</div>";
+        box.querySelectorAll("[data-stav]").forEach(function(b){ b.addEventListener("click", function(){ stav.picked = b.getAttribute("data-stav"); showStav(stav.picked); }); });
+        box.scrollIntoView({ behavior:"smooth", block:"start" });
+      }
+
       /* ---------- Init ---------- */
       renderCatalog();
       buildDeck(false);
       renderQuizSetup();
+      spreadReset();
+      renderSpread();
+      renderStav();
       updateStats();
     </script>
   </body>
