@@ -284,6 +284,9 @@
         .slots5{grid-template-columns:1fr}
         .slots5 .slot{grid-column:auto !important;grid-row:auto !important}
       }
+      .picker-sheet{max-width:640px}
+      .picker-ori{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
+      .picker-ori span{font-weight:800;font-size:14px}
       @media (prefers-reduced-motion: reduce){
         .flash{transition:none} .card{transition:none} html{scroll-behavior:auto}
         .progress i,.q-progress i{transition:none}
@@ -411,6 +414,16 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ============ RUNE PICKER MODAL ============ -->
+    <div class="overlay" id="pickerOverlay" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+      <div class="sheet picker-sheet">
+        <div class="close-row">
+          <button class="icon-btn" id="pickerClose" type="button" aria-label="Закрыть">✕</button>
+        </div>
+        <div id="pickerBody"></div>
       </div>
     </div>
 
@@ -604,7 +617,9 @@
       }
       byId("sheetClose").addEventListener("click", closeSheet);
       byId("overlay").addEventListener("click", function(e){ if(e.target === byId("overlay")) closeSheet(); });
-      document.addEventListener("keydown", function(e){ if(e.key === "Escape") closeSheet(); });
+      document.addEventListener("keydown", function(e){ if(e.key === "Escape"){ closeSheet(); closePicker(); } });
+      byId("pickerClose").addEventListener("click", closePicker);
+      byId("pickerOverlay").addEventListener("click", function(e){ if(e.target === byId("pickerOverlay")) closePicker(); });
       byId("sheetPrev").addEventListener("click", function(){ if(sheetIdx > 0){ sheetIdx--; fillSheet(); } });
       byId("sheetNext").addEventListener("click", function(){ if(sheetIdx < RUNES.length - 1){ sheetIdx++; fillSheet(); } });
       byId("sheetLearn").addEventListener("click", function(){
@@ -872,8 +887,8 @@
         24:"наследие и корни рода",
         25:"судьба, о которой нельзя знать заранее"
       };
-      var spread = { type:"3", question:"", slots:[], pickerSlot:-1 };
-      function spreadReset(){ spread.slots = SPREAD_TYPES[spread.type].positions.map(function(){ return { n:null, rev:false }; }); spread.pickerSlot = -1; }
+      var spread = { type:"3", question:"", slots:[], pickerSlot:-1, pickerRev:false };
+      function spreadReset(){ spread.slots = SPREAD_TYPES[spread.type].positions.map(function(){ return { n:null, rev:false }; }); spread.pickerSlot = -1; spread.pickerRev = false; }
       function runeByN(n){ var f = RUNES.filter(function(r){ return r.n === n; }); return f.length ? f[0] : null; }
       function firstSentence(t){ var i = t.indexOf(". "); return i === -1 ? t : t.slice(0, i + 1); }
       function hasRev(r){ return !!r.rev; }
@@ -906,23 +921,11 @@
           }
           return "<div class='slot" + (s.n ? " filled" : "") + "'" + cell + ">" + inner + "</div>";
         }).join("");
-        var pickerHtml = "";
-        if(spread.pickerSlot >= 0){
-          var used = {};
-          spread.slots.forEach(function(s, idx){ if(s.n && idx !== spread.pickerSlot) used[s.n] = true; });
-          pickerHtml = "<div class='picker'><b>Выберите руну в позицию «" + esc(t.positions[spread.pickerSlot].label) + "»</b>" +
-            "<div class='picker-grid'>" + RUNES.map(function(r){
-              return "<button class='picker-item' type='button' data-rune='" + r.n + "'" + (used[r.n] ? " disabled" : "") + ">" +
-                "<img src='" + r.file + "' alt='' /><div class='rn'>" + esc(r.name) + "</div></button>";
-            }).join("") + "</div>" +
-            "<div style='margin-top:10px'><button class='mini-btn' type='button' data-pick-cancel='1'>Отмена</button></div></div>";
-        }
         root.innerHTML =
           "<p class='lede'>Сделайте расклад своими камнями и укажите, какие руны выпали. Приложение само соберёт совместную интерпретацию — общий смысл и объяснение каждой руны в её позиции.</p>" +
           "<div class='spread-type'>" + typeBtns + "</div>" +
           "<input class='spread-q' id='spreadQ' type='text' maxlength='140' placeholder='Ваш вопрос (необязательно)' value='" + attr(spread.question) + "' />" +
           "<div class='" + (spread.type === "3" ? "slots3" : "slots5") + "'>" + slotsHtml + "</div>" +
-          pickerHtml +
           "<div style='display:flex;gap:8px;flex-wrap:wrap;margin-top:14px'>" +
             "<button class='btn gold' id='spreadGo' type='button'>Получить интерпретацию</button>" +
             "<button class='btn' id='spreadClear' type='button'>Очистить расклад</button>" +
@@ -930,15 +933,45 @@
           "<div id='spreadReading' class='reading'></div>";
         root.querySelectorAll("[data-st]").forEach(function(b){ b.addEventListener("click", function(){ spread.type = b.getAttribute("data-st"); spreadReset(); renderSpread(); }); });
         byId("spreadQ").addEventListener("input", function(e){ spread.question = e.target.value; });
-        root.querySelectorAll("[data-pick]").forEach(function(b){ b.addEventListener("click", function(){ spread.pickerSlot = Number(b.getAttribute("data-pick")); renderSpread(); }); });
+        root.querySelectorAll("[data-pick]").forEach(function(b){ b.addEventListener("click", function(){
+          var i = Number(b.getAttribute("data-pick"));
+          spread.pickerSlot = i;
+          spread.pickerRev = spread.slots[i].n ? spread.slots[i].rev : false;
+          renderSpread(); openPicker();
+        }); });
         root.querySelectorAll("[data-flip]").forEach(function(b){ b.addEventListener("click", function(){ var i = Number(b.getAttribute("data-flip")); spread.slots[i].rev = !spread.slots[i].rev; renderSpread(); }); });
         root.querySelectorAll("[data-drop]").forEach(function(b){ b.addEventListener("click", function(){ var i = Number(b.getAttribute("data-drop")); spread.slots[i] = { n:null, rev:false }; renderSpread(); }); });
-        root.querySelectorAll("[data-rune]").forEach(function(b){ b.addEventListener("click", function(){ spread.slots[spread.pickerSlot] = { n:Number(b.getAttribute("data-rune")), rev:false }; spread.pickerSlot = -1; renderSpread(); }); });
-        var cancel = root.querySelector("[data-pick-cancel]");
-        if(cancel) cancel.addEventListener("click", function(){ spread.pickerSlot = -1; renderSpread(); });
         byId("spreadGo").addEventListener("click", buildReading);
         byId("spreadClear").addEventListener("click", function(){ spreadReset(); spread.question = ""; renderSpread(); });
       }
+      function openPicker(){
+        var body = byId("pickerBody");
+        var t = SPREAD_TYPES[spread.type];
+        var pos = t.positions[spread.pickerSlot];
+        var used = {};
+        spread.slots.forEach(function(s, idx){ if(s.n && idx !== spread.pickerSlot) used[s.n] = true; });
+        body.innerHTML =
+          "<div class='picker'><b id='pickerTitle'>Выберите руну в позицию «" + esc(pos.label) + "»</b>" +
+          "<div class='picker-ori'><span>Положение:</span>" +
+            "<button class='chip' type='button' data-ori='direct' aria-pressed='" + (!spread.pickerRev) + "'>Прямая</button>" +
+            "<button class='chip' type='button' data-ori='rev' aria-pressed='" + (spread.pickerRev) + "'>Перевёрнутая</button>" +
+          "</div>" +
+          "<p class='pos-hint'>Положение выбирается здесь же — руна встанет в расклад сразу прямой или перевёрнутой. У девяти рун перевёрнутого положения нет: Гебо, Хагалаз, Иса, Йера, Эйваз, Совило, Ингуз, Дагаз и Руна Одина — они всегда кладутся прямо.</p>" +
+          "<div class='picker-grid'>" + RUNES.map(function(r){
+            return "<button class='picker-item' type='button' data-rune='" + r.n + "'" + (used[r.n] ? " disabled" : "") + ">" +
+              "<img src='" + r.file + "' alt='' /><div class='rn'>" + esc(r.name) + "</div></button>";
+          }).join("") + "</div>" +
+          "<div style='margin-top:10px'><button class='mini-btn' type='button' data-pick-cancel='1'>Отмена</button></div></div>";
+        body.querySelectorAll("[data-ori]").forEach(function(b){ b.addEventListener("click", function(){ spread.pickerRev = (b.getAttribute("data-ori") === "rev"); openPicker(); }); });
+        body.querySelectorAll("[data-rune]").forEach(function(b){ b.addEventListener("click", function(){
+          var r = runeByN(Number(b.getAttribute("data-rune")));
+          spread.slots[spread.pickerSlot] = { n:r.n, rev: spread.pickerRev && hasRev(r) };
+          closePicker(); renderSpread();
+        }); });
+        body.querySelector("[data-pick-cancel]").addEventListener("click", closePicker);
+        byId("pickerOverlay").classList.add("open");
+      }
+      function closePicker(){ byId("pickerOverlay").classList.remove("open"); spread.pickerSlot = -1; }
       function buildReading(){
         var box = byId("spreadReading");
         var t = SPREAD_TYPES[spread.type];
