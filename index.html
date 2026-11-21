@@ -992,11 +992,30 @@
             "</div>";
         }).join("");
         var themes = Object.keys(kwCount).sort(function(a, b){ return kwCount[b] - kwCount[a]; }).slice(0, 3);
-        var thread = t.positions.map(function(p, i){
-          var s = spread.slots[i]; var r = runeByN(s.n);
-          var rev = s.rev && hasRev(r);
-          return p.short + " (" + r.name + ") — " + firstSentence(rev ? revText(r) : r.desc);
-        }).join("; ") + ".";
+        function cleanSent(x){ var s = firstSentence(x).replace(/\s+$/,""); if(s.charAt(s.length-1) === ".") s = s.slice(0, -1); return s; }
+        function slotMeaning(i){ var s = spread.slots[i]; var r = runeByN(s.n); var rev = s.rev && hasRev(r); return { r:r, rev:rev, text: rev ? revText(r) : r.desc }; }
+        function posByShort(short){ for(var i = 0; i < t.positions.length; i++){ if(t.positions[i].short === short) return i; } return -1; }
+        var narrative = spread.type === "3"
+          ? [{ i:0, lead:"В прошлом" }, { i:1, lead:"Сейчас" }, { i:2, lead:"Впереди" }]
+          : [{ i:posByShort("Суть вопроса"), lead:"Суть вопроса" }, { i:posByShort("Прошлое"), lead:"Корни в прошлом" }, { i:posByShort("Будущее"), lead:"Впереди" }, { i:posByShort("Совет"), lead:"Совет рун" }, { i:posByShort("Итог"), lead:"А итог" }];
+        var story = narrative.map(function(step){
+          var m = slotMeaning(step.i);
+          var txt = cleanSent(m.text);
+          if(m.rev) txt = txt.replace(/^Перевёрнутая:\s*/, "");
+          return step.lead + " — " + m.r.name + (m.rev ? " (перевёрнутая)" : "") + ": " + txt;
+        }).join(". ") + ".";
+        var outIdx = spread.type === "3" ? 2 : posByShort("Итог");
+        var outM = slotMeaning(outIdx);
+        var conclusion = "Главная нить расклада — " + themes.join(", ") + "; ведёт всё к " + outM.r.name + " — " + CORE[outM.r.n] + (outM.rev ? " (руна перевёрнута — её тень тоже учитывайте)" : "") + ".";
+        if(spread.type === "5"){
+          var advM = slotMeaning(posByShort("Совет"));
+          conclusion += " Совет рун — " + advM.r.name + ": " + CORE[advM.r.n] + " — именно этот шаг ведёт к итогу.";
+        }
+        if(revCount > 0){
+          var firstRev = null;
+          for(var k = 0; k < t.positions.length; k++){ var mk = slotMeaning(k); if(mk.rev){ firstRev = { m:mk, label:t.positions[k].label }; break; } }
+          if(firstRev){ conclusion += " Перевёрнутая " + firstRev.m.r.name + " в позиции «" + firstRev.label + "» предупреждает: " + cleanSent(firstRev.m.text).replace(/^Перевёрнутая:\s*/, "") + "."; }
+        }
         var revLine = revCount > 0
           ? "Перевёрнутых рун: " + revCount + " из " + t.positions.length + " — здесь что-то задержано, искажено или требует осторожности."
           : "Все руны выпали прямо — поток идёт без искажений.";
@@ -1006,7 +1025,8 @@
         box.innerHTML =
           "<h3>Совместная интерпретация</h3>" +
           (spread.question ? "<p><b>Вопрос:</b> «" + esc(spread.question) + "»</p>" : "") +
-          "<div class='synth'><p><b>Общий смысл:</b> " + esc(thread) + "</p>" +
+          "<div class='synth'><p><b>Общая интерпретация:</b> " + esc(story) + "</p>" +
+          "<p><b>Вывод:</b> " + esc(conclusion) + "</p>" +
           "<p><b>Главные темы расклада:</b> " + esc(themes.join(", ")) + ".</p>" +
           "<p>" + esc(revLine) + "</p><p>" + esc(closeLine) + "</p></div>" +
           blocks +
